@@ -1,40 +1,73 @@
-# ARSW - Conteo de líneas  
-![image](https://github.com/user-attachments/assets/3253071f-974d-4cca-b5c1-43c877a03491)  
-## Nicolás Prieto Vargas  
-## 12/06/2025  
-## Descripción  
-- Durante esta práctica se va a crear un proyecto en Maven, el cual nos permita mediante consola, ingresar tres parámetros, con estos, deberemos ingresar al archivo creado y contar las líneas de código que tiene el mismo, existirán dos modos LOC (Lines Of Code) el cual nos permitirá contar las líneas de código solamente, es decir que no contará ni los comentarios ni las líneas en blanco, el otro modo es PHY (Physical Lines of Code), este modo muestra el total de las líneas que tiene el archivo, contando comentarios y líneas en blanco.  
----  
-## 🔎 Explicación del código 🔎  
-- El método main recibe dos parámetros, (phy/loc) y la ruta del archivo, luego verifica que los parámetros sean correctos y dependiendo del primer parámetros, llama al método correspondiente, finalmente muestra el resultado.  
-El método contarLineasFisicas() entra al archivo, cuenta línea por línea, aumenta el contador y ya, no realiza ningún filtro.  
-El método contarLineasLogicas() entra al archivo, empieza el conteo, pero esta vez si excluye las líneas en blanco, si tienen texto, revisa si hay comentarios en bloque o si es comentario de una línea, de ser así, el contador no aumenta, es decir, solo cuenta las líneas de código real.  
----
-## ⚠️ Datos importantes ⚠️  
-- BufferedReader lee el archivo  
-- trim () elimina espacios para detectar líneas vacías.  
----
-##  ✅ Realicemos pruebas ✅  
-Para este proyecto, realizamos varias pruebas para cada método usado, en resumen encontramos que:  
-- testContarLineasFisicas: Verifica que el método contarLineasFisicas cuente correctamente todas las líneas (vacías, comentarios y código) del archivo Ejemplo.java.
-- testContarLineasLogicas: Verifica que contarLineasLogicas cuente correctamente solo las líneas de código real (ignorando comentarios y líneas vacías) en Ejemplo.java.
-- testArchivoSoloConSaltosDeLinea: Crea un archivo temporal con solo saltos de línea y prueba que contarLineasFisicas los cuente como líneas físicas.
-- testArchivoConComentariosYCodigo: Crea un archivo con comentarios (//, / /) y una línea de código. Verifica que contarLineasFisicas cuente todas las líneas.
-- testArchivoConCodigoYLineasVacias: Crea un archivo con código y líneas vacías, y verifica que contarLineasLogicas ignore las vacías y cuente solo las de código.
-- testArchivoConComentariosMultilinea: Crea un archivo con comentarios multilínea y una línea de código. Verifica que contarLineasLogicas ignore los comentarios y cuente solo la línea de código.
-Al ejecutar las pruebas, vemos que quedaron bien y elñ programa funciona correctamente.  
-![image](https://github.com/user-attachments/assets/58c86fdb-1f1e-4e78-b272-fa09b100b5cb)  
-La estructura del proyecto quedó de la siguiente manera (ignorando la carpeta target)  
-![image](https://github.com/user-attachments/assets/feae03be-055d-40be-9607-f3915d4f5dbb)  
-Para hacer la prueba desde la línea de comandos, ejecutamos el siguente  "java src/main/java/edu/escuelaing/arsw/App.java phy src/main/java/edu/escuelaing/arsw/Ejemplo.java"  
-Dando como resultado:  
-![image](https://github.com/user-attachments/assets/1e566f54-57a4-47ad-b036-25d5f93ffaa0)  
-Y si lo comprobamos...  
-![image](https://github.com/user-attachments/assets/428dba2f-cf05-4e61-baf0-6ff1da256a41)  
-Y ahora probamos el comando  
-"java src/main/java/edu/escuelaing/arsw/App.java loc src/main/java/edu/escuelaing/arsw/Ejemplo.java"  
-Dando como resultado:  
-![image](https://github.com/user-attachments/assets/dba4b359-9e86-4799-a90c-87ecadaccf44)  
-Y si lo comprobamos...  
-![image](https://github.com/user-attachments/assets/a58c6459-01f2-4c87-8af4-8016ee40be9c)  
-Quedó todo bien.
+# ARSW - Matrix Simulation: Neo vs. Agentes
+
+Este proyecto implementa una simulación inspirada en *The Matrix*, donde **Neo** debe escapar de un tablero de agentes y llegar a un teléfono ubicado en el centro de una matriz 10x10. La simulación emplea **programación concurrente en Java** usando hilos para representar a Neo y los agentes que lo persiguen.
+
+## 🎯 Objetivo
+
+Simular un entorno dinámico en el que:
+- Neo se mueve de forma autónoma buscando el camino más corto hacia el teléfono.
+- Hasta 4 agentes lo persiguen, intentando capturarlo antes de que llegue a su objetivo.
+- El juego termina si Neo es atrapado o si llega exitosamente al teléfono.
+
+## 🧠 Lógica de la Simulación
+
+- **Tablero (`Tablero`)**: Matriz 10x10 que representa el entorno. Contiene:
+  - Muros (`Entidad.MURO`)
+  - Casillas vacías (`Entidad.VACIO`)
+  - Neo (`Entidad.NEO`)
+  - Agentes (`Entidad.AGENTE`)
+  - Teléfono (`Entidad.TELEFONO`)
+
+- **Neo (`Neo`)**:
+  - Se ejecuta como un hilo (`Runnable`).
+  - Evalúa movimientos posibles (arriba, abajo, izquierda, derecha).
+  - Prioriza movimientos que lo acerquen al teléfono.
+  - Se detiene si:
+    - Llega al teléfono (gana).
+    - Es alcanzado por un agente (pierde).
+
+- **Agentes (`Agente`)**:
+  - Se ejecutan de manera coordinada por el `ControladorAgentes`.
+  - Se acercan a la posición de Neo calculando el camino más corto (usando Manhattan distance).
+  - Si uno de ellos llega a la posición de Neo, termina la simulación con derrota para Neo.
+
+- **Controlador de Agentes (`ControladorAgentes`)**:
+  - Ejecutado como un hilo adicional.
+  - Coordina el movimiento secuencial de los agentes cada 2 segundos.
+  - Verifica si algún agente atrapó a Neo.
+
+- **Aplicación principal (`MatrixApp`)**:
+  - Inicializa el tablero y coloca elementos aleatoriamente.
+  - Genera los muros, el teléfono, Neo y los agentes.
+  - Ejecuta los hilos y gestiona el ciclo de vida del juego.
+
+## 🛠️ Tecnologías y Conceptos Utilizados
+
+### Tecnologías
+- **Java 17**
+- **Spring Boot** *(solo para facilitar el arranque del proyecto; no se utiliza en el flujo lógico principal)*
+
+### Conceptos de Programación Aplicados
+- **Programación Concurrente**: Uso de múltiples hilos (`ExecutorService`, `Runnable`) para simular comportamientos paralelos.
+- **Sincronización de Recursos**: Acceso sincronizado al tablero para evitar condiciones de carrera.
+- **Diseño modular y limpio**: Separación de lógica, modelo y controladores.
+- **Algoritmos de búsqueda simplificados**: Estrategia greedy basada en distancia Manhattan.
+
+## 🧪 Ejecución
+
+Al ejecutar la aplicación, se inicializa la simulación y se imprime el tablero en consola en cada turno. Neo y los agentes se moverán automáticamente, y el juego finalizará cuando uno gane.
+
+Ejemplo de consola:
+
+![image](https://github.com/user-attachments/assets/43c3fa29-ed9e-4314-b106-aa015abdae3d)  
+![image](https://github.com/user-attachments/assets/5f239cf5-c3c7-42aa-9855-ac5fe3b63107)  
+En este caso, Neo llegó al teléfono, por ende se muestra:  
+![image](https://github.com/user-attachments/assets/ed94b1f2-c043-447f-b127-7e868beaa4e6)  
+
+
+## 📌 Notas adicionales
+
+- La simulación termina automáticamente, mostrando el resultado en consola.
+- El diseño es extensible para agregar más entidades (por ejemplo, obstáculos móviles, otros personajes, etc.).
+- El uso de hilos y sincronización permite estudiar conceptos de concurrencia aplicados a entornos simulados.
+
