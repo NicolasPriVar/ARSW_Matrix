@@ -53,6 +53,93 @@ Simular un entorno dinámico en el que:
 - **Diseño modular y limpio**: Separación de lógica, modelo y controladores.
 - **Algoritmos de búsqueda simplificados**: Estrategia greedy basada en distancia Manhattan.
 
+## 🔍 Funcionamiento del código
+
+### 🏁 `MatrixApp` (`<<Main>>`)
+Clase principal que inicia la simulación.
+
+- **Responsabilidades:**
+  - Inicializa el `Tablero`, `Neo`, los `Agente`, y el `Teléfono`.
+  - Usa un `ExecutorService` para ejecutar los hilos concurrentes (Neo y agentes).
+  - Controla la variable `juegoTerminado` para finalizar la simulación.
+  - Muestra mensajes según si Neo gana (llega al teléfono) o pierde (es atrapado).
+
+
+
+### 🗺️ `Tablero`
+Clase que representa la matriz de juego (10x10).
+
+- **Atributos importantes:**
+  - `grid`: matriz de `Entidad` (`Entidad[][]`) que representa el contenido del tablero.
+  - `barrera`: `CyclicBarrier` para sincronizar a Neo y los agentes.
+  - `contadorAgentes`: limita a máximo 4 agentes.
+
+- **Responsabilidades:**
+  - Consultar y actualizar posiciones del tablero.
+  - Validar si una celda está dentro de los límites y libre.
+  - Mostrar el tablero en consola.
+  - Sincronizar los hilos con la barrera (`CyclicBarrier`).
+
+
+
+### 👤 `Neo` (`Runnable`)
+Clase que representa a Neo, ejecutado como un hilo.
+
+- **Responsabilidades:**
+  - Moverse hacia el teléfono (estrategia: movimiento más cercano).
+  - Terminar el juego si llega al teléfono o es atrapado.
+  - Coordinar sus movimientos con los agentes mediante la barrera del tablero.
+
+- **Lógica de movimiento:**
+  - Calcula los posibles movimientos (arriba, abajo, izquierda, derecha).
+  - Elige el movimiento con menor distancia al teléfono.
+
+
+
+### 👮‍♂️ `Agente` (`Runnable`)
+Clase que representa a los agentes que persiguen a Neo.
+
+- **Responsabilidades:**
+  - Buscar a Neo en el tablero y moverse hacia él.
+  - Terminar el juego si alcanzan a Neo.
+  - Coordinarse con otros hilos mediante la barrera del tablero.
+
+- **Lógica de movimiento:**
+  - Busca las celdas adyacentes válidas (no muros).
+  - Elige la que esté más cerca de la posición actual de Neo.
+
+
+
+### 🟩 `Entidad` (`enum`)
+Enumeración que representa los posibles contenidos de una celda del tablero.
+
+- **Valores:**
+  - `VACIO`: Celda vacía.
+  - `MURO`: Obstáculo fijo.
+  - `AGENTE`: Agente enemigo.
+  - `NEO`: Personaje principal.
+  - `TELEFONO`: Punto de escape de Neo.
+
+- **Atributo:**
+  - `symbol`: carácter que se usa para imprimir cada entidad.
+
+
+
+### 📍 `Posicion`
+Clase que representa una coordenada en la matriz.
+
+- **Atributos:**
+  - `row`, `col`: fila y columna.
+
+- **Responsabilidades:**
+  - Almacenar y comparar posiciones.
+  - Calcular distancia en los movimientos (en otras clases).
+  - Método `equals` personalizado para comparar posiciones.
+
+## 🗺️ Diagrama de clases
+
+![image](https://github.com/user-attachments/assets/b8799c17-7277-432f-bbbd-d65459fb3580)  
+
 ## 🧪 Ejecución
 
 Al ejecutar la aplicación, se inicializa la simulación y se imprime el tablero en consola en cada turno. Neo y los agentes se moverán automáticamente, y el juego finalizará cuando uno gane.
